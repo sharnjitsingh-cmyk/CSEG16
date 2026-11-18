@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagonal sum, matrix multiplication and binary search</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fbfaf7;--fg:#1f2430;--muted:#5d6475;--card:#ffffff;--line:#d9dce3;--code:#f0f1f5;
+--a-bg:#dbe8ff;--a-fg:#12408f;--v-bg:#eadcff;--v-fg:#4a1d96;--t-bg:#d2f1ea;--t-fg:#0b5a49;--g-bg:#e3f2d5;--g-fg:#2c5a0e;--ring:#2f6df6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171c;--fg:#e8eaf0;--muted:#a3a9b8;--card:#1d2027;--line:#343845;--code:#101217;
+--a-bg:#1e3560;--a-fg:#bcd3ff;--v-bg:#3a2564;--v-fg:#d9c5ff;--t-bg:#124036;--t-fg:#b4ead9;--g-bg:#27401a;--g-fg:#cbe9b2;--ring:#7aa2ff}}
+:root[data-theme="dark"]{--bg:#15171c;--fg:#e8eaf0;--muted:#a3a9b8;--card:#1d2027;--line:#343845;--code:#101217;
+--a-bg:#1e3560;--a-fg:#bcd3ff;--v-bg:#3a2564;--v-fg:#d9c5ff;--t-bg:#124036;--t-fg:#b4ead9;--g-bg:#27401a;--g-fg:#cbe9b2;--ring:#7aa2ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0 12px;line-height:1.25}
+h2{font-size:17px;margin:20px 0 6px}
+p,li{max-width:62ch}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.tabs button{flex:none;font:600 14px system-ui,sans-serif;padding:8px 12px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--a-bg);color:var(--a-fg);border-color:var(--ring)}
+button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.vis{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+.row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.grid{display:grid;gap:4px;padding:6px;border-left:2px solid var(--muted);border-right:2px solid var(--muted)}
+.c{box-sizing:border-box;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font:600 15px system-ui,sans-serif;background:var(--code);border-radius:6px}
+.c.a{background:var(--a-bg);color:var(--a-fg);outline:2px solid var(--ring)}
+.c.v{background:var(--v-bg);color:var(--v-fg)}
+.c.t,.c.r{background:var(--t-bg);color:var(--t-fg)}
+.c.dn{background:var(--g-bg);color:var(--g-fg)}
+.c.x{opacity:.35}
+.lb{font:13px system-ui,sans-serif;color:var(--muted);text-align:center;margin:0 0 2px}
+.op{font:600 20px system-ui,sans-serif;color:var(--muted)}
+.mw{display:grid;grid-template-columns:16px auto;gap:2px}
+.cix{display:grid;gap:4px;padding:0 8px}
+.rix{display:grid;grid-auto-rows:38px;gap:4px;padding:6px 0;align-items:center}
+.cix span,.rix span{font:12px system-ui,sans-serif;color:var(--muted);text-align:center;height:16px;line-height:16px}
+.out{font:600 13px/1.55 ui-monospace,Menlo,Consolas,monospace;text-align:center;min-height:74px;padding:10px 0 4px}
+.ctl{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.ctl button,.pick button{font:600 14px system-ui,sans-serif;padding:8px 14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;cursor:pointer}
+.pick{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:10px;font:14px system-ui,sans-serif;color:var(--muted)}
+.pick button{padding:5px 12px}
+.pick button[aria-pressed="true"]{background:var(--a-bg);color:var(--a-fg);border-color:var(--ring)}
+.bsrow{display:flex;gap:4px;justify-content:center}
+.col{width:34px;text-align:center}
+.col .c{width:34px}
+.ix{font:12px system-ui,sans-serif;color:var(--muted);height:18px;line-height:18px}
+.ix.on,.cix span.on,.rix span.on{background:var(--a-bg);color:var(--a-fg);font-weight:700;border-radius:4px}
+.mk{font:700 12px system-ui,sans-serif;color:var(--a-fg);height:18px}
+.lg{font:12px system-ui,sans-serif;color:var(--muted);text-align:center;margin:6px 0 0;min-height:36px}
+pre{background:var(--code);padding:12px;border-radius:8px;overflow-x:auto;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;margin:6px 0}
+.key{background:var(--code);border-left:3px solid var(--ring);padding:8px 12px;border-radius:0 8px 8px 0;font-size:15px}
+</style>
+</head>
+<body>
+<main>
+<h1>Concept first, then approach</h1>
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panel"></div>
+</main>
+<script>
+var M=[[1,2,3],[4,5,6],[7,8,9]],A=[[1,2],[3,4]],B=[[5,6],[7,8]];
+var CF=[[0,0],[0,0]];for(var i0=0;i0<2;i0++)for(var j0=0;j0<2;j0++)CF[i0][j0]=A[i0][0]*B[0][j0]+A[i0][1]*B[1][j0];
+var arr=[3,8,12,19,25,31,40,52],tg=31;
+function BS(t){var lo=0,hi=arr.length-1,s=[];while(lo<=hi){var m=Math.floor((lo+hi)/2);s.push({lo:lo,hi:hi,mid:m});if(arr[m]==t)return s;if(arr[m]<t)lo=m+1;else hi=m-1;}s.push({lo:lo,hi:hi,end:true});return s;}
+var T=[
+{name:"Diagonal sum",steps:3,
+concept:"In a square matrix, the main diagonal is the line of cells where the row number equals the column number: a[0][0], a[1][1], a[2][2]. The diagonal sum adds only those cells and ignores the rest.",
+how:["Make a variable sum and set it to 0.","Run one loop for i from 0 to n-1. You do not need a nested loop, because row and column are the same number.","Add a[i][i] to sum in every round.","Print sum after the loop."],
+code:"int sum = 0;\nfor (i = 0; i < 3; i++)\n    sum += a[i][i];\nprintf(\"Diagonal sum = %d\", sum);",
+at:function(k){var p=0;for(var q=0;q<k;q++)p+=M[q][q];var o=k<0?"":"sum += a["+k+"]["+k+"]<br>"+p+" + "+M[k][k]+" = "+(p+M[k][k]);
+return {m:[{d:M,f:function(i,j){return i==j&&i<k?"dn":(i==k&&j==k?"a":"")}}],o:o}}},
+{name:"Multiply matrices",steps:4,
+concept:"To get one cell c[i][j] of the answer, take row i of A and column j of B, multiply the pairs that line up, and add them (a dot product). This works only when the number of columns in A equals the number of rows in B. The answer has A\u2019s rows and B\u2019s columns.",
+how:["Check the sizes: columns of A must equal rows of B.","Loop i over the rows of A and j over the columns of B. Each pair (i, j) is one answer cell.","Set c[i][j] = 0 before the third loop.","Loop k over the shared size and add a[i][k] * b[k][j] to c[i][j]."],
+code:"for (i = 0; i < 2; i++)\n    for (j = 0; j < 2; j++) {\n        c[i][j] = 0;\n        for (k = 0; k < 2; k++)\n            c[i][j] += a[i][k] * b[k][j];\n    }",
+at:function(k){var i=k<0?-1:Math.floor(k/2),j=k<0?-1:k%2;var D=[[0,0],[0,0]];
+for(var x=0;x<2;x++)for(var y=0;y<2;y++)D[x][y]=(x*2+y<=k)?CF[x][y]:"?";
+var o=k<0?"":"c["+i+"]["+j+"] = "+A[i][0]+"\u00d7"+B[0][j]+" + "+A[i][1]+"\u00d7"+B[1][j]+"<br>= "+(A[i][0]*B[0][j])+" + "+(A[i][1]*B[1][j])+" = "+CF[i][j];
+return {ops:["\u00d7","="],m:[{n:"A",d:A,f:function(r,c){return r==i?"v":""}},{n:"B",d:B,f:function(r,c){return c==j?"t":""}},{n:"C",d:D,f:function(r,c){var z=r*2+c;return z==k?"a":(z<k?"dn":"")}}],o:o}}},
+{name:"Binary search",targets:[31,8,20],
+cnt:function(){return BS(tg).length},
+concept:"Binary search finds a value in a sorted array by checking the middle element first. If the middle is too small, the whole left half is thrown away. If it is too big, the right half is thrown away. Every check cuts the search area in half, so it is much faster than checking one by one. It works only when the array is sorted.",
+how:["Set low = 0 and high = n-1. This is the part of the array still being searched.","Repeat while low <= high: find mid = (low + high) / 2.","If a[mid] equals the key, you are done: it is found at index mid.","If a[mid] is smaller than the key, search the right half: low = mid + 1. If it is bigger, search the left half: high = mid - 1.","If low becomes greater than high, nothing is left to search, so the key is not in the array."],
+code:"int low = 0, high = n - 1, mid, found = -1;\nwhile (low <= high) {\n    mid = (low + high) / 2;\n    if (a[mid] == key) { found = mid; break; }\n    else if (a[mid] < key) low = mid + 1;\n    else high = mid - 1;\n}",
+note:"With 8 elements, binary search needs at most 4 checks. With 1000 elements it needs at most 10.",
+at:function(k){var st=BS(tg),s=k>=0?st[k]:null,h='<div class="bsrow">';
+for(var i=0;i<arr.length;i++){var cl="",mk="";
+if(s&&!s.end){cl=(i<s.lo||i>s.hi)?"x":"r";if(i==s.mid)cl=(arr[i]==tg)?"dn":"a";if(i==s.lo)mk+="L";if(i==s.mid)mk+="M";if(i==s.hi)mk+="H";}
+else if(s&&s.end)cl="x";
+h+='<div class="col"><div class="c '+cl+'">'+arr[i]+'</div><div class="ix'+((cl=="a"||cl=="dn")?" on":"")+'">'+i+'</div><div class="mk">'+mk+'</div></div>';}
+h+='</div><p class="lg">L = low, M = mid, H = high. Teal = still searching, grey = discarded, green = found.</p>';
+var o="";if(s){if(s.end)o="low = "+s.lo+" is greater than high = "+s.hi+"<br>"+tg+" is not in the array";
+else{var v=arr[s.mid];o="low = "+s.lo+", high = "+s.hi+", mid = ("+s.lo+" + "+s.hi+") / 2 = "+s.mid+"<br>a["+s.mid+"] = "+v+(v==tg?" equals "+tg+", found at index "+s.mid:(v<tg?" < "+tg+", so low = "+(s.mid+1):" > "+tg+", so high = "+(s.mid-1)));}}
+return {raw:h,o:o}}}
+];
+var cur=0,step=-1;
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function grid(m){var n=m.d[0].length,R=m.d.length,cl=[],ro=[],co=[];for(var i=0;i<R;i++){cl[i]=[];for(var j=0;j<n;j++)cl[i][j]=m.f(i,j);}for(var i=0;i<R;i++){var an=0,al=1;for(var j=0;j<n;j++){if(cl[i][j]=="a")an=1;if(cl[i][j]!="v"&&cl[i][j]!="t")al=0;}ro[i]=an||al;}for(var j=0;j<n;j++){var an2=0,al2=1;for(var i=0;i<R;i++){if(cl[i][j]=="a")an2=1;if(cl[i][j]!="v"&&cl[i][j]!="t")al2=0;}co[j]=an2||al2;}var h='<div>'+(m.n?'<p class="lb">'+m.n+'</p>':'')+'<div class="mw"><span></span><div class="cix" style="grid-template-columns:repeat('+n+',38px)">';
+for(var j=0;j<n;j++)h+='<span'+(co[j]?' class="on"':'')+'>'+j+'</span>';
+h+='</div><div class="rix">';
+for(var i=0;i<R;i++)h+='<span'+(ro[i]?' class="on"':'')+'>'+i+'</span>';
+h+='</div><div class="grid" style="grid-template-columns:repeat('+n+',38px)">';
+for(var i=0;i<R;i++)for(var j=0;j<n;j++)h+='<div class="c '+m.f(i,j)+'">'+m.d[i][j]+'</div>';
+return h+'</div></div></div>'}
+function vis(){var t=T[cur],r=t.at(step),cnt=t.cnt?t.cnt():t.steps,h="";
+if(t.targets){h+='<div class="pick">Search for:';for(var p=0;p<t.targets.length;p++)h+='<button data-v="'+t.targets[p]+'" aria-pressed="'+(t.targets[p]==tg)+'">'+t.targets[p]+'</button>';h+='</div>';}
+if(r.raw)h+=r.raw;else{h+='<div class="row">';for(var q=0;q<r.m.length;q++){if(q&&r.ops)h+='<span class="op">'+r.ops[q-1]+'</span>';h+=grid(r.m[q]);}h+='</div>';}
+h+='<div class="out">'+(step<0?"Tap Next step to start":r.o)+'</div>';
+h+='<div class="ctl"><button id="nx">'+(step>=cnt-1?"Done":"Next step")+'</button><button id="rs">Reset</button></div>';
+var el=document.getElementById("vis");el.innerHTML=h;
+document.getElementById("nx").onclick=function(){if(step<cnt-1){step++;vis()}};
+document.getElementById("rs").onclick=function(){step=-1;vis()};
+var pb=el.querySelectorAll(".pick button");for(var b=0;b<pb.length;b++)pb[b].onclick=function(){tg=parseInt(this.getAttribute("data-v"));step=-1;vis()};}
+function panel(){var t=T[cur],h='<h2>Concept</h2><p>'+t.concept+'</p><h2>Approach</h2><ol>';
+for(var i=0;i<t.how.length;i++)h+='<li>'+t.how[i]+'</li>';
+h+='</ol><h2>Watch it run</h2><div class="vis" id="vis"></div><h2>Code</h2><pre>'+esc(t.code)+'</pre>';
+if(t.note)h+='<p class="key">'+t.note+'</p>';
+document.getElementById("panel").innerHTML=h;vis();}
+function tabs(){var h="";for(var i=0;i<T.length;i++)h+='<button role="tab" aria-selected="'+(i==cur)+'" data-i="'+i+'">'+T[i].name+'</button>';
+var el=document.getElementById("tabs");el.innerHTML=h;
+var b=el.querySelectorAll("button");for(var k=0;k<b.length;k++)b[k].onclick=function(){cur=parseInt(this.getAttribute("data-i"));step=-1;tabs();panel()};}
+tabs();panel();
+</script>
+</body>
+</html>
