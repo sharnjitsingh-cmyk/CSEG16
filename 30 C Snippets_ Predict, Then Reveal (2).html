@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>30 C Snippets: Predict, Then Reveal</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1c2030;--muted:#5d6580;--line:#dde1ee;--accent:#4f46e5;--code:#12162b;--miss:#f1f2f7;--b:#16a34a;--m:#d97706;--t:#dc2626;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1020;--card:#181b30;--text:#e8eaf8;--muted:#9aa2c4;--line:#2a2f50;--accent:#8b85ff;--code:#0a0c1a;--miss:#20243e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1020;--card:#181b30;--text:#e8eaf8;--muted:#9aa2c4;--line:#2a2f50;--accent:#8b85ff;--code:#0a0c1a;--miss:#20243e;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{margin:8px 0 4px;font-size:1.6rem}
+.sub{color:var(--muted);margin:0 0 14px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.bar button{border:1px solid var(--line);background:var(--card);color:var(--text);padding:7px 14px;border-radius:99px;cursor:pointer;font:inherit;font-size:.9rem}
+.bar button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:14px 0;overflow:hidden}
+.card header{display:flex;gap:10px;align-items:center;padding:10px 14px}
+.n{font-weight:700;color:var(--muted)}
+.tag{font-size:.72rem;font-weight:700;color:#fff;padding:2px 9px;border-radius:99px}
+.Basic{background:var(--b)}.Medium{background:var(--m)}.Tricky{background:var(--t)}
+.top{color:var(--muted);font-size:.8rem;margin-left:auto}
+pre{margin:0;background:var(--code);color:#e6e9ff;padding:12px 14px;overflow-x:auto;font-size:.85rem;line-height:1.45}
+.body{padding:10px 14px}
+.body button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer;font:inherit}
+.out{display:none;margin-top:10px;font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--miss);border-left:4px solid var(--accent);padding:8px 10px;border-radius:6px;white-space:pre-wrap}
+.out.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div hidden>
+<div class="bar" id="tt"></div>
+<div class="bar" id="lv"></div>
+<div class="bar"><button id="all">Reveal all</button><button id="none">Hide all</button></div>
+</div>
+<div id="cards"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const S=[
+['Operators','Basic',String.raw`printf("%d %d", 17 / 5, 17 % 5);`,'3 2'],
+['Operators','Basic',String.raw`printf("%d %d %d", 5 > 3, 5 == 3, 5 != 3);`,'1 0 1'],
+['Operators','Basic',String.raw`int x = 10;
+x += 5;
+x *= 2;
+printf("%d", x);`,'30'],
+['Operators','Basic',String.raw`int a = 5;
+int b = a++;
+int c = ++a;
+printf("%d %d %d", a, b, c);`,'7 5 7'],
+['Operators','Basic',String.raw`int a = 7, b = 2;
+printf("%d %.1f %.1f", a / b, (float)a / b, (float)(a / b));`,'3 3.5 3.0'],
+['Operators','Medium',String.raw`int a = 0, b = 0;
+if (a++ && b++) { }
+printf("%d %d", a, b);`,'1 0'],
+['Operators','Medium',String.raw`printf("%d %d %d %d", 12 & 10, 12 | 10, 12 ^ 10, ~12);`,'8 14 6 -13'],
+['Operators','Medium',String.raw`printf("%d %d", 5 << 2, 20 >> 2);`,'20 5'],
+['Operators','Medium',String.raw`int n = 7;
+printf(n & 1 ? "Odd" : "Even");`,'Odd'],
+['Operators','Tricky',String.raw`printf("%d", 3 + 4 << 1);`,'14'],
+['Operators','Tricky',String.raw`printf("%d", printf("Hi"));`,'Hi2'],
+['Operators','Tricky',String.raw`int a = 5;
+int s = sizeof(a++);
+printf("%d %d", a, s);`,'5 4'],
+['Operators','Tricky',String.raw`int x, y;
+x = 5, 10;
+y = (5, 10);
+printf("%d %d", x, y);`,'5 10'],
+['Operators','Tricky',String.raw`printf("%d", 5 == 5 == 5);`,'0'],
+['if-else','Basic',String.raw`int n = -4;
+if (n > 0) printf("P");
+else if (n < 0) printf("N");
+else printf("Z");`,'N'],
+['if-else','Basic',String.raw`int m = 60;
+if (m >= 90) printf("A");
+else if (m >= 75) printf("B");
+else if (m >= 50) printf("C");
+else printf("F");`,'C'],
+['if-else','Basic',String.raw`int y = 2100;
+if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0)
+    printf("Leap");
+else
+    printf("Not leap");`,'Not leap'],
+['if-else','Basic',String.raw`int a = 7, b = 9;
+if (a > b) printf("%d", a);
+else printf("%d", b);`,'9'],
+['if-else','Medium',String.raw`int id = 101, pin = 1234;
+if (id == 101 && pin == 4321) printf("Granted");
+else if (id == 101) printf("Wrong PIN");
+else printf("Unknown");`,'Wrong PIN'],
+['if-else','Medium',String.raw`int a = 5, b = 5, c = 8;
+if (a + b <= c || b + c <= a || a + c <= b) printf("Invalid");
+else if (a == b && b == c) printf("Equilateral");
+else if (a == b || b == c || a == c) printf("Isosceles");
+else printf("Scalene");`,'Isosceles'],
+['if-else','Medium',String.raw`int u = 250, bill;
+if (u <= 100) bill = u * 5;
+else if (u <= 200) bill = 500 + (u - 100) * 7;
+else bill = 500 + 700 + (u - 200) * 10;
+printf("%d", bill);`,'1700'],
+['if-else','Medium',String.raw`int x = -3, y = 4;
+if (x > 0 && y > 0) printf("Q1");
+else if (x < 0 && y > 0) printf("Q2");
+else if (x < 0 && y < 0) printf("Q3");
+else if (x > 0 && y < 0) printf("Q4");
+else printf("Axis");`,'Q2'],
+['if-else','Tricky',String.raw`int x = 5;
+if (x = 0) printf("A");
+else printf("B %d", x);`,'B 0'],
+['if-else','Tricky',String.raw`int a = 0, b = 5;
+if (a)
+    if (b) printf("X");
+else printf("Y");
+printf("End");`,'End'],
+['if-else','Tricky',String.raw`if (0.1 + 0.2 == 0.3) printf("Equal");
+else printf("Not equal");`,'Not equal'],
+['if-else','Tricky',String.raw`int a = 5;
+if (1 < a < 3) printf("True");
+else printf("False");`,'True'],
+['if-else','Tricky',String.raw`int x = 9;
+if (x == 5 || 6) printf("Yes");
+else printf("No");`,'Yes'],
+['if-else','Tricky',String.raw`int m = 85;
+if (m >= 50) printf("C ");
+if (m >= 75) printf("B ");
+if (m >= 90) printf("A ");`,'C B '],
+['if-else','Tricky',String.raw`int a = -1;
+unsigned int b = 1;
+if (a < b) printf("a < b");
+else printf("a >= b");`,'a >= b'],
+['Ternary','Basic',String.raw`int a = 15, b = 22;
+int max = (a > b) ? a : b;
+printf("%d", max);`,'22'],
+['Ternary','Basic',String.raw`int n = 7;
+printf("%s", n % 2 == 0 ? "Even" : "Odd");`,'Odd'],
+['Ternary','Medium',String.raw`int m = 85;
+printf("%c", m >= 90 ? 'A' : m >= 75 ? 'B' : 'C');`,'B'],
+['Ternary','Medium',String.raw`int a = 5;
+int r = a > 3 ? (a < 10 ? 1 : 2) : 3;
+printf("%d", r);`,'1'],
+['Ternary','Tricky',String.raw`int a = 5, b = 10;
+a > b ? a++ : b++;
+printf("%d %d", a, b);`,'5 11'],
+['Ternary','Tricky',String.raw`printf("%d", 1 ? 2 : 3 ? 4 : 5);`,'2']
+].map((s,i)=>[i+1,...s]);
+let tp='All',lv='All';
+function mk(el,arr,get,set){el.innerHTML=arr.map(x=>'<button class="'+(get()===x?'on':'')+'">'+x+'</button>').join('');[...el.children].forEach(b=>b.onclick=()=>{set(b.textContent);draw()})}
+function draw(){
+  mk($('#tt'),['All','Operators','if-else','Ternary'],()=>tp,v=>tp=v);
+  mk($('#lv'),['All','Basic','Medium','Tricky'],()=>lv,v=>lv=v);
+  const box=$('#cards');box.innerHTML='';
+  S.filter(s=>(tp==='All'||s[1]===tp)&&(lv==='All'||s[2]===lv)).forEach(s=>{
+    const d=document.createElement('div');d.className='card';
+    d.innerHTML='<header><span class="n">#'+s[0]+'</span></header><pre></pre><div class="body"><button>Reveal output</button><div class="out"></div></div>';
+    d.querySelector('pre').textContent=s[3];
+    const o=d.querySelector('.out');o.textContent=s[4];
+    const b=d.querySelector('button');
+    b.onclick=()=>{o.classList.toggle('show');b.textContent=o.classList.contains('show')?'Hide output':'Reveal output'};
+    box.appendChild(d);
+  });
+}
+function setAll(v){document.querySelectorAll('.card').forEach(c=>{c.querySelector('.out').classList.toggle('show',v);c.querySelector('button').textContent=v?'Hide output':'Reveal output'})}
+$('#all').onclick=()=>setAll(true);$('#none').onclick=()=>setAll(false);
+draw();
+</script>
+</body>
+</html>
