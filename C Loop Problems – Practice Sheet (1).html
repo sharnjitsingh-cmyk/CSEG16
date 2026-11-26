@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C Loop Problems – Practice Sheet</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔁</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#f2f5f8;--card:#fff;--ink:#14213d;--mute:#5b6577;--line:#d5dce6;--acc:#0f6e8c;--accbg:#e3f1f6;--code:#eef2f6;--edit:#fff6d6;--editline:#d9a400}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1520;--card:#182131;--ink:#e8edf5;--mute:#9aa6b8;--line:#2a364a;--acc:#5cc3e0;--accbg:#173040;--code:#101926;--edit:#3a3210;--editline:#e0b414}}
+:root[data-theme="dark"]{--bg:#0f1520;--card:#182131;--ink:#e8edf5;--mute:#9aa6b8;--line:#2a364a;--acc:#5cc3e0;--accbg:#173040;--code:#101926;--edit:#3a3210;--editline:#e0b414}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:28px 16px 60px}
+header h1{font-size:1.9rem;line-height:1.2;margin:0 0 6px;font-weight:600}
+header p{margin:0;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}
+button{font:inherit;font-size:.9rem;padding:7px 14px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--acc)}
+button:focus-visible,[contenteditable]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button.on{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+article{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:4px;padding:20px 22px;margin-bottom:22px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.top h2{font-size:1.2rem;margin:0;font-weight:600}
+.tag{display:inline-block;margin-top:4px;font-size:.8rem;padding:1px 9px;border-radius:99px;background:var(--accbg);color:var(--acc);font-weight:500}
+h3{font-size:.95rem;margin:16px 0 4px;font-weight:600;color:var(--mute)}
+.f{margin:0;white-space:pre-wrap}
+pre.f{font:.9rem/1.5 "IBM Plex Mono",monospace;background:var(--code);padding:10px 12px;border-radius:4px;overflow-x:auto;margin:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.grid{grid-template-columns:1fr}article{padding:16px}}
+.case{margin-top:18px;border-top:1px dashed var(--line);padding-top:4px}
+.editing .f{background:var(--edit);outline:1px dashed var(--editline);outline-offset:2px;border-radius:3px;min-height:1.5em}
+.note{font-size:.85rem;color:var(--mute);display:none}
+body.editing .note{display:block}
+@media print{.bar,.edit-btn,.note{display:none!important}body{background:#fff;color:#000}article{break-inside:avoid;border-color:#999}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar">
+  <button id="editAll" aria-pressed="false">Edit problems</button>
+  <button id="reset">Reset to original</button>
+  <button id="print">Print sheet</button>
+</div>
+<p class="note" id="hint">Edit mode is on. Click any text to change it. Changes save in this browser automatically.</p>
+<main id="list"></main>
+</div>
+<script>
+var KEY="loop-problems-v1";
+var P=[
+{t:"Class Attendance Percentage",g:"for loop",
+s:"A teacher takes attendance for n students. She enters 1 for a present student and 0 for an absent student. Find how many students were present and the attendance percentage.",
+i:"An integer n, then n values (each 0 or 1).",o:"Present = X and Percentage = Y (2 decimal places).",c:"1 ≤ n ≤ 100",
+si:"5\n1 0 1 1 1",so:"Present = 4\nPercentage = 80.00",ti:"6\n1 0 1 0 1 0",to:"Present = 3\nPercentage = 50.00"},
+{t:"Magic Number Game",g:"while loop, nested",
+s:"In a number game, a player keeps adding the digits of a number until only a single digit remains. That final digit is the “magic number”. Print the magic number and how many rounds of digit addition were needed.",
+i:"One positive integer num.",o:"Magic Number = X and Rounds = Y.",c:"1 ≤ num ≤ 1000000",
+si:"9875",so:"Magic Number = 2\nRounds = 3",ti:"12345",to:"Magic Number = 6\nRounds = 2"},
+{t:"Supermarket Billing Counter",g:"do-while loop",
+s:"A cashier scans item prices one by one. When all items are scanned, she enters 0 to close the bill. The billing screen must always accept at least one entry. Print the number of items and the total bill.",
+i:"Positive integer prices, ending with 0.",o:"Items = X and Total = Y.",c:"Each price ≤ 10000",
+si:"50 120 30 0",so:"Items = 3\nTotal = 200",ti:"10 20 0",to:"Items = 2\nTotal = 30"},
+{t:"Lucky Draw Prime Tickets",g:"for loop with break",
+s:"A lucky draw has tickets numbered from a to b. Only tickets with prime numbers are eligible to win. Print all eligible ticket numbers and how many there are.",
+i:"Two integers a and b.",o:"The prime numbers on one line, then Count = X on the next line.",c:"1 ≤ a ≤ b ≤ 1000",
+si:"10 30",so:"11 13 17 19 23 29\nCount = 6",ti:"1 10",to:"2 3 5 7\nCount = 4"},
+{t:"Stage Decoration Pyramid",g:"nested for loop",
+s:"An event team decorates a stage with a centered pyramid of stars. For n rows, row i has n − i leading spaces followed by 2i − 1 stars. Print the pyramid.",
+i:"One integer n.",o:"n lines forming the pyramid.",c:"1 ≤ n ≤ 15",
+si:"3",so:"  *\n ***\n*****",ti:"4",to:"   *\n  ***\n *****\n*******"}
+];
+var K=["t","s","i","o","c","si","so","ti","to"];
+var data=JSON.parse(JSON.stringify(P));
+try{var sv=localStorage.getItem(KEY);if(sv){var p=JSON.parse(sv);if(Array.isArray(p)&&p.length===5)data=p;}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
+function esc(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fld(n,k,tag,cls){return '<'+tag+' class="f '+(cls||'')+'" data-n="'+n+'" data-k="'+k+'">'+esc(data[n][k])+'</'+tag+'>';}
+function render(){
+  var h="";
+  for(var n=0;n<data.length;n++){
+    h+='<article><div class="top"><div><h2>Problem '+(n+1)+': '+fld(n,"t","span")+'</h2><span class="tag">'+esc(P[n].g)+'</span></div></div>'
+    +'<h3>Problem statement</h3>'+fld(n,"s","p")
+    +'<h3>Input format</h3>'+fld(n,"i","p")
+    +'<h3>Output format</h3>'+fld(n,"o","p")
+    +'<h3>Constraints</h3>'+fld(n,"c","p")
+    +'<div class="grid"><div><h3>Sample input</h3>'+fld(n,"si","pre")+'</div><div><h3>Sample output</h3>'+fld(n,"so","pre")+'</div></div>'
+    +'<div class="case"><div class="grid"><div><h3>Test case: input</h3>'+fld(n,"ti","pre")+'</div><div><h3>Test case: expected output</h3>'+fld(n,"to","pre")+'</div></div></div></article>';
+  }
+  document.getElementById("list").innerHTML=h;
+  setEdit(document.body.classList.contains("editing"));
+}
+function setEdit(on){
+  document.body.classList.toggle("editing",on);
+  var els=document.querySelectorAll(".f");
+  for(var i=0;i<els.length;i++){if(on)els[i].setAttribute("contenteditable","plaintext-only");else els[i].removeAttribute("contenteditable");}
+  var b=document.getElementById("editAll");
+  b.textContent=on?"Done editing":"Edit problems";
+  b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);
+}
+document.getElementById("editAll").onclick=function(){setEdit(!document.body.classList.contains("editing"));};
+document.getElementById("list").addEventListener("input",function(e){
+  var t=e.target;if(!t.dataset||t.dataset.k===undefined)return;
+  data[+t.dataset.n][t.dataset.k]=t.innerText.replace(/\n$/,"");save();
+});
+document.getElementById("reset").onclick=function(){
+  if(confirm("Reset all five problems to the original text?")){data=JSON.parse(JSON.stringify(P));save();render();}
+};
+document.getElementById("print").onclick=function(){window.print();};
+render();
+</script>
+</body>
+</html>
